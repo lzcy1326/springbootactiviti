@@ -148,6 +148,6 @@ public class ModelerController {
     @RequestMapping(value = "/model/{modelId}/delete", method = RequestMethod.POST)
     public String deleteModel(@PathVariable("modelId") String modelId) {
         repositoryService.deleteModel(modelId);
-        return "/service/model/querylist";
+        return "/model/querylist";
     }
 }

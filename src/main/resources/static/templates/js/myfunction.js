@@ -1,8 +1,3 @@
-var rootUrl=/*[[@{/}]]*/ '';
-//方法1：
-var one=/*[[@{/thymeleaf}]]*/ '';
-console.log(rootUrl);
-console.log(one);
 function startprocessDefinition(processDefinitionId) {
 	var json = {};
 	$("#paramtable").find("tr").each(function(i, e){
@@ -200,10 +195,9 @@ function backTo(processInstanceId) {
 		}
 	});
 }
-
 function deployModel(modelId){
 	$.ajax({
-		url : basePath + "model/deploy/" + modelId,
+		url : basePath + "/model/deploy/" + modelId,
 		type: "post",
 		success : function(data) {
 			if(data == "/model/querylist"){
@@ -222,7 +216,7 @@ function deployModel(modelId){
 
 function deleteModel(modelId){
 	$.ajax({
-		url : basePath + "model/" + modelId + "/delete",
+		url : basePath + "/model/" + modelId + "/delete",
 		type: "post",
 		success : function(data) {
 			alert('deleted');
