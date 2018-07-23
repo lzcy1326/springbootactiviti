@@ -1,0 +1,32 @@
+#main {
+	margin-top: 10px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+#left_div {
+	float: left;
+	margin-top:2px;
+	width: 49%;
+	border: 0px solid;
+}
+
+#right_div {
+	float: right;
+	margin-top:2px;
+	width: 49%;
+	border: 0px solid;
+}
+
+#flowimg, #flowpng {
+	background-color: #FFF0F5;
+}
+
+#modelimg {
+	width: 90%;
+	height: 70%;
+}
+
+#warning_div {
+	display: none;
+}
