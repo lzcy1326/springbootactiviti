@@ -4,8 +4,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import groovy.util.logging.Slf4j;
+import org.activiti.bpmn.converter.BpmnXMLConverter;
+import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.editor.language.json.converter.BpmnJsonConverter;
 import org.activiti.engine.ActivitiException;
 import org.activiti.engine.RepositoryService;
+import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.Model;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +23,10 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
+import static org.activiti.editor.constants.ModelDataJsonConstants.*;
+
 @Slf4j
 @RestController
-@RequestMapping(value = "/service")
 public class ModelerController {
 
     @Autowired
@@ -53,9 +58,9 @@ public class ModelerController {
         editorNode.set("stencilset", stencilSetNode);
 
         ObjectNode modelObjectNode = objectMapper.createObjectNode();
-        modelObjectNode.put("name", name);
-        modelObjectNode.put("revision", 1);
-        modelObjectNode.put("description", description);
+        modelObjectNode.put(MODEL_NAME, name);
+        modelObjectNode.put(MODEL_REVISION, 1);
+        modelObjectNode.put(MODEL_DESCRIPTION, description);
         modelObjectNode.put("process_id", key); // 唯一标识符
         editorNode.set("properties", modelObjectNode);
 
@@ -81,8 +86,8 @@ public class ModelerController {
                     modelNode = (ObjectNode) jsonNode;
                 } else {
                     modelNode = objectMapper.createObjectNode();
-                    modelNode.put("name", model.getName());
-                    modelNode.put("revision", model.getVersion());
+                    modelNode.put(MODEL_NAME, model.getName());
+                    modelNode.put(MODEL_REVISION, model.getVersion());
                 }
                 modelNode.put("modelId", model.getId());
                 ObjectNode editorJsonNode = (ObjectNode) objectMapper.readTree(new String(repositoryService.getModelEditorSource(model.getId()), "utf-8"));
@@ -149,5 +154,38 @@ public class ModelerController {
     public String deleteModel(@PathVariable("modelId") String modelId) {
         repositoryService.deleteModel(modelId);
         return "/model/querylist";
+    }
+
+    @RequestMapping(value = "/model/{modelId}/deploy", method = RequestMethod.POST)
+    public String deployModel(@PathVariable("modelId") String modelId) throws IOException {
+        Model model = repositoryService.getModel(modelId);
+        if (!StringUtils.isEmpty(model.getDeploymentId())) {
+            Model modelData = repositoryService.newModel();
+            modelData.setKey(model.getKey());
+            modelData.setName(model.getName());
+            modelData.setMetaInfo(model.getMetaInfo());
+            modelData.setVersion(model.getVersion() + 1);
+
+            repositoryService.saveModel(modelData);
+            repositoryService.addModelEditorSource(modelData.getId(), repositoryService.getModelEditorSource(modelId));
+            repositoryService.addModelEditorSourceExtra(modelData.getId(),
+                    repositoryService.getModelEditorSourceExtra(modelId));
+
+            return "/model/querylist";
+        }
+        String data = new String(repositoryService.getModelEditorSource(modelId), "UTF-8");
+        ObjectNode modelNode = (ObjectNode) objectMapper.readTree(data);
+        BpmnModel bModel = new BpmnJsonConverter().convertToBpmnModel(modelNode);
+        byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(bModel, "UTF-8");
+
+        String deploymentName = model.getKey() + "$" + model.getId();
+        String processName = deploymentName + ".bpmn20.xml";
+
+        Deployment deployment = repositoryService.createDeployment().name(deploymentName)
+                .addString(processName, new String(bpmnBytes, "UTF-8")).deploy();
+
+        model.setDeploymentId(deployment.getId());
+        repositoryService.saveModel(model);
+        return "/processdefinition/querylist";
     }
 }

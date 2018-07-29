@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.zip.ZipInputStream;
 
 @RestController
-@RequestMapping(value = "/service")
 public class ProcessDefinitionControllor{
 
 	@Resource

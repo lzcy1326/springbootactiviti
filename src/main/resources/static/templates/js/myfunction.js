@@ -43,7 +43,7 @@ function showbiggerFlow(processDefinitionId, isSvg){
 		$("#flowimg").attr("src", 
 				basePath + "/diagram-viewer/index.html?processDefinitionId=" + processDefinitionId + "&_date="+new Date().getTime());
 	}else{
-		$("#flowimg").attr("src", basePath + "processdefinition/querypng/" + processDefinitionId + "?_date="+new Date().getTime());
+		$("#flowimg").attr("src", basePath + "/processdefinition/querypng/" + processDefinitionId + "?_date="+new Date().getTime());
 	}
 	$("#biggerimg").modal("show");
 }
@@ -197,7 +197,7 @@ function backTo(processInstanceId) {
 }
 function deployModel(modelId){
 	$.ajax({
-		url : basePath + "/model/deploy/" + modelId,
+		url : basePath + "/model/" + modelId + "/deploy",
 		type: "post",
 		success : function(data) {
 			if(data == "/model/querylist"){

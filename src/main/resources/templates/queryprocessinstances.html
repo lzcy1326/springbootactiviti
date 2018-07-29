@@ -1,0 +1,64 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head  th:include="base::header" >
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>${name }运行的流程实例</title>
+</head>
+
+<body>
+<div id="main">
+	<div class="panel panel-info">
+		<div class="panel-heading text-center">
+	        <h2 th:text="${name } + '当前的流程实例'"/>
+	    </div>
+	</div>
+	<div id="left_div" class="panel panel-default">
+		<div class="panel-body ">
+			<table class="table table-bordered table-striped table-hover text-center">
+				<caption class="panel-title text-center" th:text="${name } + '当前的流程实例'"/>
+				<thead>
+					<tr>
+						<th class="text-center">ID</th>
+		    			<th class="text-center">流程的activityId</th>
+		    			<th class="text-center">流程的processDefinitionKey</th>
+		    		</tr>
+				</thead>
+				<tbody>
+					<tr th:each="flow:${flows}">
+						<td>
+							<a target="processInstance_window" th:href="@{'/task/querylist/'+ ${flow.processInstanceId}}">ID</a>
+						</td>
+						<td th:text="${flow.activityId}">流程的activityId</td>
+						<td th:text="${flow.processDefinitionKey}">流程的processDefinitionKey</td>
+					</tr>
+				</tbody>	
+			</table>
+		</div>
+	</div>
+	<div id="right_div" class="panel panel-default">
+		<div class="panel-body ">
+			<table class="table table-bordered table-striped table-hover text-center">
+				<caption class="panel-title text-center" th:text="${name } + '当前的流程实例'"/>
+				<tbody>
+					<tr>
+						<th class="text-center">ID</th>
+		    			<th class="text-center">流程的startActivityId</th>
+		    			<th class="text-center">流程的processDefinitionKey</th>
+		    			<th class="text-center">流程的startTime</th>
+		    			<th class="text-center">流程的endTime</th>
+		    		</tr>
+					<tr th:each="flow:${flows}">
+						<td>
+							<a target="history_window" th:href="@{'/history/querylist/'+${flow.processInstanceId}}">ID</a>
+						</td>
+						<td th:text="${flow.startActivityId}">流程的startActivityId</td>
+						<td th:text="${flow.processDefinitionKey}">流程的processDefinitionKey</td>
+						<td th:text="${#dates.format(${flow.startTime}, 'yyyy-MM-dd HH:mm:ss SSS')}">流程的startTime</td>
+						<td th:text="${#dates.format(${flow.endTime}, 'yyyy-MM-dd HH:mm:ss SSS')}"></td>
+					</tr>
+				</tbody>	
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+</html>

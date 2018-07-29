@@ -11,7 +11,7 @@
 		        <h2>已经发布的流程</h2>
 		    </div>
 		    <div class="panel-body text-center">
-				<form class="form-inline" role="form" th:action="@{/service/processdefinition/deploy}" method="post"
+				<form class="form-inline" role="form" th:action="@{/processdefinition/deploy}" method="post" 
 					enctype="multipart/form-data">
 		    		<div class="form-group">
 				    	<label class="sr-only" for="inputfile">bpmn或者zip文件</label>
@@ -37,16 +37,16 @@
 					<tbody>
 						<tr th:each="flow:${flows}">
 							<td><a target="processDefinition_window"
-							    th:href="@{'/service/processdefinition/querylist' + ${flow.id}}" th:text="${flow.id}">ID</a></td>
-							<td th:text="${flow.key">流程的key</td>
+							    th:href="@{'/processinstance/querylist' + ${flow.id}}" th:text="${flow.id}">ID</a></td>
+							<td th:text="${flow.key}">流程的key</td>
 							<td th:text="${flow.name}">流程的name</td>
 							<td>
-								<button class="btn btn-default" th:onclick="'javascript:showbiggerFlow('+ ${flow.id}+',false)'">查看</button>
-								<button class="btn btn-default" th:onclick="'javascript:showbiggerFlow('+ ${flow.id}+',true)'">查看</button>
+								<button class="btn btn-default" th:onclick="'javascript:showbiggerFlow(\''+ ${flow.id}+'\',false)'">查看</button>
+								<button class="btn btn-default" th:onclick="'javascript:showbiggerFlow(\''+ ${flow.id}+'\',true)'">查看</button>
 							</td>
 							<td>
-								<button class="btn btn-default" onclick="startprocessDefinition('${flow.id}')">启动</button>
-								<button class="btn btn-default" onclick="deleteprocessDefinition('${flow.id}')">删除</button>
+								<button class="btn btn-default" th:onclick="'javascript:startprocessDefinition(\''+ ${flow.id}+'\')'">启动</button>
+								<button class="btn btn-default" th:onclick="'javascript:deleteprocessDefinition(\''+ ${flow.id}+'\')'">删除</button>
 							</td>
 						</tr>
 					</tbody>
@@ -96,4 +96,16 @@
 	    </div>
 	</div>
 </body>
+<script type="text/javascript" th:inline="javascript">
+    var basePath=getContextPath();
+
+    // 获取根路径
+    function getContextPath() {
+        var pathName = document.location.pathname;
+        var index = pathName.substr(1).indexOf("/");
+        var result = pathName.substr(0,index+1);
+        return result;
+    }
+</script>
+<script type="text/javascript" th:src="@{/templates/js/myfunction.js}"></script>
 </html>
